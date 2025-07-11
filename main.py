@@ -114,6 +114,20 @@ run = client.beta.threads.runs.create(
 )
 
 def wait_for_run_completion(client, thread_id, run_id, sleep_interval):
+    while True:
+        try:
+            run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
+            if run.completed_at:
+
+                break
+
+        except Exception as e:
+            print(f"An unhandled error exception {e}")
+            break
+
+    time.sleep(sleep_interval)
+
+wait_for_run_completion(client=client, thread_id=thread_id, run_id=run.id, sleep_interval=5)
 
 
 
