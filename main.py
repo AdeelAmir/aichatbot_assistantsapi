@@ -3,7 +3,6 @@ import time
 import openai
 
 from dotenv import load_dotenv, find_dotenv
-from pyexpat.errors import messages
 
 load_dotenv()
 
@@ -72,69 +71,41 @@ model = "gpt-4.1-nano"
 # # Run
 # wait_for_run_completion(client=client, thread_id=thread_id, run_id=run.id, sleep_interval=5)
 
-
-# PRACTICE CODE
-
-# Create Assistant
-# fitness_training_assistant = client.beta.assistants.create(
-#     name = "Personal Trainer",
-#     instructions="""You are the best personal trainer and nutritionist who knows how to get clients to build lean muscles.\n
-#         You've trained high-caliber athletes and movie stars""",
-#     model=model
-# )
-# assistant_id = fitness_training_assistant.id
-# print(assistant_id)
-
-# Create Thread
-# thread = client.beta.threads.create(
-#     messages=[
-#         {
-#             "role": "user",
-#             "content": "How do I get started working out to lose fat and build muscles?",
-#         }
-#     ]
-# )
-# thread_id = thread.id
-# print(thread_id)
-
 assistant_id = "asst_dEOjoWSKv7kvYMW82POJLn3K"
 thread_id = "thread_4Ft444Mihe1pEPtCs2xvGeZg"
 
-# Create Run
+# Create Message
 message = client.beta.threads.messages.create(
     thread_id=thread_id,
     role="user",
-    content= "How many reps do I need to do to build lean muscles?"
+    content="How step i need to take to build body fitness as James Bond"
 )
 
+# Create Run
 run = client.beta.threads.runs.create(
-    assistant_id=assistant_id,
     thread_id=thread_id,
-    instructions="Treat user as James Bond"
+    assistant_id=assistant_id,
+    instructions="Treat him as Muhammad Adeel"
 )
 
-def wait_for_run_completion(client, thread_id, run_id, sleep_interval):
+def wait_for_run_completion(client, thread_id, run_id, sleep_interval = 5):
     while True:
         try:
             run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
             if run.completed_at:
-
+                messages = client.beta.threads.messages.list(thread_id=thread_id)
+                last_message = messages.data[0]
+                response = last_message.content[0].text.value
+                print(f"Assistant response: {response}")
                 break
 
         except Exception as e:
-            print(f"An unhandled error exception {e}")
+            print(f"An error occurred while retrieving the run: {e}")
             break
 
-    time.sleep(sleep_interval)
+        time.sleep(sleep_interval)
 
-wait_for_run_completion(client=client, thread_id=thread_id, run_id=run.id, sleep_interval=5)
-
-
-
-
-
-
-
+wait_for_run_completion(client, thread_id, run.id, sleep_interval=5)
 
 
 
