@@ -88,16 +88,57 @@ model = "gpt-4.1-nano"
 # print(analysis)
 
 # Third Example - Response Streaming
-# def analyze_customer_feedback(feedback_text):
-#     print("Analyze customer feedback in real time: \n")
+# def customer_support_agent(customer_feedback):
+#     print("Customer support agent: \n\n")
 #
 #     stream = client.responses.create(
 #         model=model,
-#         instructions="",
-#         input=feedback_text,
+#         instructions="You are a customer support agent, Do the sentimental analysis of customer feedback, provide key issues of customer in feedback and actionable insights, Respond customer in a friendly way",
+#         input=customer_feedback,
 #         stream=True,
 #         temperature=0.3,
-#         max_output_tokens=150
+#         max_output_tokens=300
+#     )
+#
+#     full_response = ""
+#
+#     for event in stream:
+#         if event.type == "response.output_text.delta":
+#             print(event.delta, end="")
+#             full_response += event.delta
+#
+#         elif event.type == "response.error":
+#             print(f"\n\nError: {event.error}")
+#
+#     return full_response
+#
+# feedback = f"""
+#         I was using postman software for last three years and its working good for me \n
+#         but one thing i saw incase I dont have API collection of software but have code, \n
+#         its very difficult to manually create an API collection. To create AI based solution \n
+#         which review code and auto create api collection with all the apis required in postman, \n
+#         i am looking for postman developer API but postman is not providing it.
+#
+#         OUTPUT_FORMAT:
+#         The output must be in valid JSON format, without any special characters, markdown, or quotation formatting (e.g., no triple quotes or backticks).
+#
+#         json_format: {{
+#             "sentimental_analysis": <sentimental analysis of customer feedback>,
+#             "key_issues": <highlight key issues of customer>,
+#             "actionable_insights": <actionable insights of customer feedback>,
+#             "respond_to_customer": <your response to customer>
+#         }}"""
+#
+# response = customer_support_agent(feedback)
+
+# Example 4 - Internet based searching to answer customer queries
+# def ai_web_agent(query):
+#     stream = client.responses.create(
+#         model="gpt-4o",
+#         tools=[{ "type": "web_search_preview" }],
+#         stream=True,
+#         input=query,
+#         max_output_tokens=200
 #     )
 #
 #     full_response = ""
@@ -107,26 +148,12 @@ model = "gpt-4.1-nano"
 #             print(event.delta, end="")
 #             full_response += event.delta
 #         elif event.type == "response.error":
-#             print(f"\nError occurred: {event.error}")
+#             print(f"\nError Occured: {event.error}")
+#
 #
 #     return full_response
 #
-# # Example with a complex customer review
-# feedback = """
-# I've been using the SmartHome Hub for about 3 months now. The voice recognition is fantastic
-# and the integration with my existing devices was mostly seamless. However, the app crashes
-# at least once a day, and the night mode feature often gets stuck until I restart the system.
-# Customer support was helpful but couldn't fully resolve the app stability issues.
-# """
-#
-# analysis_result = analyze_customer_feedback(feedback)
+# customer_query = "What are LLMs? How OPEN AI is better than Claude? In which domain Claude is best? Response should be under 200 words"
+# agent_response = ai_web_agent(customer_query)
 
-def customer_support_agent(customer_feedback):
-    stream = client.responses.create(
-        model=model,
-        instructions="",
-        input="",
-        stream=True,
-        temperature=0.3,
-        
-    )
+# Example 5 - File based searching
