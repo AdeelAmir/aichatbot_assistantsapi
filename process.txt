@@ -1,0 +1,5 @@
+1- create assistant
+2- create thread
+3- create message
+4- create run
+5- wait for run completion

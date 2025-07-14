@@ -1,145 +1,67 @@
-import time
-
 import openai
-
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv()
-
 client = openai.OpenAI()
-
 model = "gpt-4.1-nano"
 
-# Create Personal Trainer Assistant
-# personal_trainer_assistant = client.beta.assistants.create(
-#     name="Personal Trainer",
-#     instructions="""You are the best personal trainer and nutritionist who knows how to get clients to \n
-#     build lean muscles. You've trained high-caliber athletes and movie stars""",
-#     model= model
-# )
+# First Example - automatically generate compelling product descriptions based on basic product details
+# def generate_product_description(product_name, product_features, target_audience, product_price):
+#     response = client.responses.create(
+#         model=model,
+#         instructions="You are a professional copywriter to write compelling, concise product descriptions. Focus on product benefits rather than its features.",
+#         input=f"""
+#         Create product description for product name given inside three character delimiter
 #
-# assistant_id = personal_trainer_assistant.id
-# print(assistant_id)
+#         Product Name: '''{product_name}'''
+#         Product Features:
+#         - {product_features[0]}
+#         - {product_features[1]}
+#         - {product_features[2]}
 #
-# # Create Thread
-# thread = client.beta.threads.create(
-#     messages=[
-#         {
-#             "role": "user",
-#             "content": "How do I get started working out to lose fat and build muscles?",
-#         }
-#     ]
-# )
+#         Target Audience: {target_audience}
+#         Product Price: {product_price}
 #
-# thread_id = thread.id
-# print(thread_id)
-
-# Assistant & Thread Ids
-# assistant_id = "asst_AnXVe0bRWgux0klwfqLQa7Mw"
-# thread_id = "thread_ZomFgbScfuBXIdxxNRzyuRer"
+#         OUTPUT_FORMAT:
+#         The output must be in valid JSON format, without any special characters, markdown, or quotation formatting (e.g., no triple quotes or backticks).
 #
-# message = "How many reps do I need to do to build lean muscles?"
-# message = client.beta.threads.messages.create(
-#     thread_id=thread_id,
-#     role="user",
-#     content=message
-# )
+#         json_format: {{
+#             'short_description': '<short product description of 20 words>',
+#             'product_benefits': '<array of product benefits upto 3>',
+#             'product_features': '<array of product features upto 3>',
+#             'target_audience': '<target audience>',
+#             'product_price': '<product price>',
+#         }}
 #
-# # Run the thread
-# run = client.beta.threads.runs.create(
-#     thread_id=thread_id,
-#     assistant_id=assistant_id,
-#     instructions="Please address the user as James Bond"
-# )
+#          Keep it under 150 words.
+#         """,
+#         temperature=0.7,
+#         max_output_tokens=150
+#     )
 #
-# def wait_for_run_completion(client, thread_id, run_id, sleep_interval = 5):
-#     while True:
-#         try:
-#             run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
-#             if run.completed_at:
-#                 print("Thread run completed")
-#                 messages = client.beta.threads.messages.list(thread_id=thread_id)
-#                 last_message = messages.data[0]
-#                 response = last_message.content[0].text.value
-#                 print(f"Assistants Response: {response}")
-#                 break
-#         except Exception as e:
-#             print(f"An error occurred while retrieving the run: {e}")
-#             break
-#         time.sleep(sleep_interval)
+#     return response.output_text
 #
-# # Run
-# wait_for_run_completion(client=client, thread_id=thread_id, run_id=run.id, sleep_interval=5)
+# product_description = generate_product_description("HP Pavilion 15", ["11th Gen Intel Core i5 Processor", "15.6 inch Full HD Display", "512GB SSD + 8GB RAM"], "Students, remote workers", "$649 USD")
+#
+# print(product_description)
 
-assistant_id = "asst_dEOjoWSKv7kvYMW82POJLn3K"
-thread_id = "thread_4Ft444Mihe1pEPtCs2xvGeZg"
+# Second Example - e-commerce platforms need to analyze product photos
+def analyze_product_image(product_image_url):
+    response = client.responses.create(
+        model=model,
+        instructions="",
+        input=f"""
+        
+        """,
+        temperature=0.2
+    )
 
-# Create Message
-message = client.beta.threads.messages.create(
-    thread_id=thread_id,
-    role="user",
-    content="How step i need to take to build body fitness as James Bond"
-)
+    return response.output_text
 
-# Create Run
-run = client.beta.threads.runs.create(
-    thread_id=thread_id,
-    assistant_id=assistant_id,
-    instructions="Treat him as Muhammad Adeel"
-)
-
-def wait_for_run_completion(client, thread_id, run_id, sleep_interval = 5):
-    while True:
-        try:
-            run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
-            if run.completed_at:
-                messages = client.beta.threads.messages.list(thread_id=thread_id)
-                last_message = messages.data[0]
-                response = last_message.content[0].text.value
-                print(f"Assistant response: {response}")
-                break
-
-        except Exception as e:
-            print(f"An error occurred while retrieving the run: {e}")
-            break
-
-        time.sleep(sleep_interval)
-
-wait_for_run_completion(client, thread_id, run.id, sleep_interval=5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Example with a sports team image
+analysis = analyze_product_image(
+    "https://upload.wikimedia.org/wikipedia/commons/a/a5/Barcelona_fc_lamina_elgrafico.jpg")
+print(analysis)
 
 
 
