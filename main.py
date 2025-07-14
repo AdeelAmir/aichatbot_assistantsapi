@@ -46,24 +46,87 @@ model = "gpt-4.1-nano"
 # print(product_description)
 
 # Second Example - e-commerce platforms need to analyze product photos
-def analyze_product_image(product_image_url):
-    response = client.responses.create(
+# def analyze_product_image(image_url):
+#     response = client.responses.create(
+#         model=model,
+#         instructions="You are a product photography expert and ecommerce consultant",
+#         input=[
+#             {
+#                 "role": "user",
+#                 "content": f"""
+#                 Analyze this product image and provide the following details: \n
+#
+#                 1. Product Category
+#                 2. Product Color
+#                 3. Product Brand
+#                 4. Product Make
+#                 5. Product Model
+#
+#                 Output Format (No special characters or formatting):
+#                 Product Category: <category>
+#                 Product Color: <color>
+#                 Product Brand: <brand>
+#                 Product Model: <model>
+#                 """
+#             },
+#             {
+#                 "role": "user",
+#                 "content": [
+#                     {
+#                         "type": "input_image",
+#                         "image_url": image_url
+#                     }
+#                 ]
+#             }
+#         ],
+#         temperature=0.2
+#     )
+#
+#     return response.output_text
+#
+# analysis = analyze_product_image("https://storage.googleapis.com/sogauto-522d4.firebasestorage.app/files/listings/File-20250714-095807-58033937.webp")
+# print(analysis)
+
+# Third Example - Response Streaming
+# def analyze_customer_feedback(feedback_text):
+#     print("Analyze customer feedback in real time: \n")
+#
+#     stream = client.responses.create(
+#         model=model,
+#         instructions="",
+#         input=feedback_text,
+#         stream=True,
+#         temperature=0.3,
+#         max_output_tokens=150
+#     )
+#
+#     full_response = ""
+#
+#     for event in stream:
+#         if event.type == "response.output_text.delta":
+#             print(event.delta, end="")
+#             full_response += event.delta
+#         elif event.type == "response.error":
+#             print(f"\nError occurred: {event.error}")
+#
+#     return full_response
+#
+# # Example with a complex customer review
+# feedback = """
+# I've been using the SmartHome Hub for about 3 months now. The voice recognition is fantastic
+# and the integration with my existing devices was mostly seamless. However, the app crashes
+# at least once a day, and the night mode feature often gets stuck until I restart the system.
+# Customer support was helpful but couldn't fully resolve the app stability issues.
+# """
+#
+# analysis_result = analyze_customer_feedback(feedback)
+
+def customer_support_agent(customer_feedback):
+    stream = client.responses.create(
         model=model,
         instructions="",
-        input=f"""
+        input="",
+        stream=True,
+        temperature=0.3,
         
-        """,
-        temperature=0.2
     )
-
-    return response.output_text
-
-# Example with a sports team image
-analysis = analyze_product_image(
-    "https://upload.wikimedia.org/wikipedia/commons/a/a5/Barcelona_fc_lamina_elgrafico.jpg")
-print(analysis)
-
-
-
-
-
