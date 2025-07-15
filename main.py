@@ -245,6 +245,182 @@ model = "gpt-4.1-nano"
 # print(f"Function results: {conversion_result}")
 
 # List of exchange rates
+# exchange_rates = {
+#     "USD": 1.0,
+#     "EUR": 0.93,
+#     "GBP": 0.79,
+#     "JPY": 153.2,
+#     "CAD": 1.37,
+#     "AUD": 1.52,
+#     "PKR": 284.5
+# }
+#
+# def convert_currency(amount, from_currency, to_currency):
+#     """Convert an amount from one currency to another."""
+#     # Normalize currency codes to uppercase
+#     from_currency = from_currency.upper()
+#     to_currency = to_currency.upper()
+#
+#     # Check if currencies are supported
+#     if from_currency not in exchange_rates:
+#         return {"error": f"Currency not supported: {from_currency}"}
+#     if to_currency not in exchange_rates:
+#         return {"error": f"Currency not supported: {to_currency}"}
+#
+#     # Convert to USD first, then to target currency
+#     amount_in_usd = amount / exchange_rates[from_currency]
+#     converted_amount = amount_in_usd * exchange_rates[to_currency]
+#
+#     return {
+#         "original_amount": amount,
+#         "from_currency": from_currency,
+#         "to_currency": to_currency,
+#         "converted_amount": round(converted_amount, 2)
+#     }
+
+# tools = [
+#     {
+#         "type": "function",
+#         "name": "convert_currency",
+#         "description": "Function to convert amount from one currency to another currency based on live currency rates",
+#         "parameters": {
+#             "type": "object",
+#             "properties": {
+#                 "amount": {
+#                     "type": "number",
+#                     "description": "The amount to be converted from one currency to another."
+#                 },
+#                 "from_currency": {
+#                     "type": "string",
+#                     "description": "The currency code to convert from (e.g., USD, PKR, GBP)."
+#                 },
+#                 "to_currency": {
+#                     "type": "string",
+#                     "description": "The currency code to convert to (e.g., USD, PKR, GBP)."
+#                 }
+#             },
+#             "required": ["amount", "from_currency", "to_currency"],
+#             "additionalProperties": False
+#         }
+#     }
+# ]
+#
+# response = client.responses.create(
+#     model= model,
+#     input= [
+#         {
+#             "role": "user",
+#             "content": "I want to convert 100 pounds into pakistani rupees"
+#         }
+#     ],
+#     tools= tools
+# )
+#
+# tools_call = response.output[0]
+# print(f"Function called: {tools_call.name}")
+# print(f"Function arguments: {tools_call.arguments}")
+#
+# if tools_call.name == "convert_currency":
+#
+#     arguments = json.loads(tools_call.arguments)
+#
+#     conversion_response = convert_currency(**arguments)
+#
+#     print(conversion_response)
+#
+# else:
+#     print("Cannot handle this query")
+
+# def currency_assistant(user_message, conversation_history = None):
+#
+#     # create conversion history if not exists
+#     if conversation_history is None:
+#         conversation_history = []
+#
+#     # add user message into conversation history array
+#     conversation_history.append({
+#         "role": "user",
+#         "content": user_message
+#     })
+#
+#     # define available tools
+#     tools = [
+#         {
+#             "type": "function",
+#             "name": "currency_convertor",
+#             "description": "Function to convert amount from one currency to another currency",
+#             "parameters": {
+#                 "type": "object",
+#                 "properties": {
+#                     "amount": {
+#                         "type": "number",
+#                         "description": "The amount to be converted from one currency to another"
+#                     },
+#                     "from_currency": {
+#                         "type": "string",
+#                         "description": "The currency code of currency to convert from (e.g., USD, PKR)"
+#                     },
+#                     "to_currency": {
+#                         "type": "string",
+#                         "description": "The currency code of currency to convert to (e.g., USD, PKR)"
+#                     }
+#                 },
+#                 "required": ["amount", "from_currency", "to_currency"],
+#                 "additionalProperties": False
+#             }
+#         }
+#     ]
+#
+#     response = client.responses.create(
+#         model=model,
+#         input=conversation_history,
+#         tools=tools
+#     )
+#
+#     if response.output and isinstance(response.output, list) and response.output[0].type == "function_call":
+#
+#         tool_calls = response.output[0]
+#
+#         # Process the function call
+#         arguments  = json.loads(tool_calls.arguments)
+#         result = convert_currency(**arguments)
+#
+#         # Add the function call and its results to conversation history
+#         conversation_history.append(tool_calls)
+#         conversation_history.append(
+#             {
+#                 "type": "function_call_output",
+#                 "call_id": tool_calls.call_id,
+#                 "output": json.dumps(result)
+#             }
+#         )
+#
+#         # Get the final response from agent
+#         final_response = client.responses.create(
+#             model=model,
+#             input=conversation_history,
+#             tools=tools
+#         )
+#
+#         return final_response.output_text, conversation_history
+#
+#     else:
+#         return response.output_text, conversation_history
+#
+# # Call Agent with user message 1
+# user_message = "I want to convert 150 dollars into pakistani rupees"
+# assistant_response, conversation = currency_assistant(user_message)
+#
+# print(f"User Message: {user_message}")
+# print(f"Assistant Response: {assistant_response}")
+#
+# # Call Agent with user message 2
+# user_message = "How much pounds for 200 euros"
+# assistant_response, conversation = currency_assistant("How much pounds for 200 euros", conversation_history=conversation)
+#
+# print(f"User Message: {user_message}")
+# print(f"Assistant Response: {assistant_response}")
+
 exchange_rates = {
     "USD": 1.0,
     "EUR": 0.93,
@@ -278,55 +454,12 @@ def convert_currency(amount, from_currency, to_currency):
         "converted_amount": round(converted_amount, 2)
     }
 
-tools = [
-    {
-        "type": "function",
-        "name": "convert_currency",
-        "description": "Function to convert amount from one currency to another currency based on live currency rates",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number",
-                    "description": "The amount to be converted from one currency to another."
-                },
-                "from_currency": {
-                    "type": "string",
-                    "description": "The currency code to convert from (e.g., USD, PKR, GBP)."
-                },
-                "to_currency": {
-                    "type": "string",
-                    "description": "The currency code to convert to (e.g., USD, PKR, GBP)."
-                }
-            },
-            "required": ["amount", "from_currency", "to_currency"],
-            "additionalProperties": False
-        }
-    }
-]
+# create currency conversion website ai-agent
 
-response = client.responses.create(
-    model= model,
-    input= [
-        {
-            "role": "user",
-            "content": "I want to convert 100 pounds into pakistani rupees"
-        }
-    ],
-    tools= tools
-)
+def currency_conversion_agent(user_message, conversation_history = None):
+    if conversation_history is None:
+        conversation_history = []
 
-tools_call = response.output[0]
-print(f"Function called: {tools_call.name}")
-print(f"Function arguments: {tools_call.arguments}")
+    conversation_history
 
-if tools_call.name == "convert_currency":
 
-    arguments = json.loads(tools_call.arguments)
-
-    conversion_response = convert_currency(**arguments)
-
-    print(conversion_response)
-
-else:
-    print("Cannot handle this query")
