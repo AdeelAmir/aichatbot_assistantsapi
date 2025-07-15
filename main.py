@@ -1,3 +1,6 @@
+import json
+from email.policy import strict
+
 import openai
 from dotenv import load_dotenv, find_dotenv
 
@@ -157,3 +160,173 @@ model = "gpt-4.1-nano"
 # agent_response = ai_web_agent(customer_query)
 
 # Example 5 - File based searching
+
+# Example 6 - Function Calling
+
+# Dictionary of exchange rates (relative to USD)
+# exchange_rates = {
+#     "USD": 1.0,
+#     "EUR": 0.93,
+#     "GBP": 0.79,
+#     "JPY": 153.2,
+#     "CAD": 1.37,
+#     "AUD": 1.52
+# }
+#
+# def convert_currency(amount, from_currency, to_currency):
+#     """Convert an amount from one currency to another."""
+#     # Normalize currency codes to uppercase
+#     from_currency = from_currency.upper()
+#     to_currency = to_currency.upper()
+#
+#     # Check if currencies are supported
+#     if from_currency not in exchange_rates:
+#         return {"error": f"Currency not supported: {from_currency}"}
+#     if to_currency not in exchange_rates:
+#         return {"error": f"Currency not supported: {to_currency}"}
+#
+#     # Convert to USD first, then to target currency
+#     amount_in_usd = amount / exchange_rates[from_currency]
+#     converted_amount = amount_in_usd * exchange_rates[to_currency]
+#
+#     return {
+#         "original_amount": amount,
+#         "from_currency": from_currency,
+#         "to_currency": to_currency,
+#         "converted_amount": round(converted_amount, 2)
+#     }
+#
+# tools = [
+#    {
+#        "type": "function",
+#        "name": "convert_currency",
+#        "description": "Convert an amount from one currency to another using current exchange rates",
+#        "parameters": {
+#            "type": "object",
+#            "properties": {
+#                "amount": {
+#                    "type": "number",
+#                    "description": "The amount of money to convert"
+#                },
+#                "from_currency": {
+#                    "type": "string",
+#                    "description": "The currency code to convert from (e.g., USD, EUR, GBP)"
+#                },
+#                "to_currency": {
+#                    "type": "string",
+#                    "description": "The currency code to convert to (e.g., USD, EUR, GBP)"
+#                }
+#            },
+#            "required": ["amount", "from_currency", "to_currency"],
+#            "additionalProperties": False
+#        },
+#        "strict": True
+#    }
+# ]
+#
+# input_messages = [
+#    {"role": "user", "content": "How much is 100 euros in Japanese yen?"}
+# ]
+#
+# response = client.responses.create(
+#    model="gpt-4o",
+#    input=input_messages,
+#    tools=tools,
+# )
+#
+# tool_call = response.output[0]
+# print(f"Function called: {tool_call.name}")
+# print(f"Arguments: {tool_call.arguments}")
+#
+# args = json.loads(tool_call.arguments)
+#
+# # Execute the function with the parameters determined by the model
+# conversion_result = convert_currency(**args)
+# print(f"Function results: {conversion_result}")
+
+# List of exchange rates
+exchange_rates = {
+    "USD": 1.0,
+    "EUR": 0.93,
+    "GBP": 0.79,
+    "JPY": 153.2,
+    "CAD": 1.37,
+    "AUD": 1.52,
+    "PKR": 284.5
+}
+
+def convert_currency(amount, from_currency, to_currency):
+    """Convert an amount from one currency to another."""
+    # Normalize currency codes to uppercase
+    from_currency = from_currency.upper()
+    to_currency = to_currency.upper()
+
+    # Check if currencies are supported
+    if from_currency not in exchange_rates:
+        return {"error": f"Currency not supported: {from_currency}"}
+    if to_currency not in exchange_rates:
+        return {"error": f"Currency not supported: {to_currency}"}
+
+    # Convert to USD first, then to target currency
+    amount_in_usd = amount / exchange_rates[from_currency]
+    converted_amount = amount_in_usd * exchange_rates[to_currency]
+
+    return {
+        "original_amount": amount,
+        "from_currency": from_currency,
+        "to_currency": to_currency,
+        "converted_amount": round(converted_amount, 2)
+    }
+
+tools = [
+    {
+        "type": "function",
+        "name": "convert_currency",
+        "description": "Function to convert amount from one currency to another currency based on live currency rates",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "description": "The amount to be converted from one currency to another."
+                },
+                "from_currency": {
+                    "type": "string",
+                    "description": "The currency code to convert from (e.g., USD, PKR, GBP)."
+                },
+                "to_currency": {
+                    "type": "string",
+                    "description": "The currency code to convert to (e.g., USD, PKR, GBP)."
+                }
+            },
+            "required": ["amount", "from_currency", "to_currency"],
+            "additionalProperties": False
+        }
+    }
+]
+
+response = client.responses.create(
+    model= model,
+    input= [
+        {
+            "role": "user",
+            "content": "I want to convert 100 pounds into pakistani rupees"
+        }
+    ],
+    tools= tools
+)
+
+tools_call = response.output[0]
+print(f"Function called: {tools_call.name}")
+print(f"Function arguments: {tools_call.arguments}")
+
+if tools_call.name == "convert_currency":
+
+    arguments = json.loads(tools_call.arguments)
+
+    conversion_response = convert_currency(**arguments)
+
+    print(conversion_response)
+
+else:
+    print("Cannot handle this query")
