@@ -1,5 +1,6 @@
 import json
 from email.policy import strict
+from fileinput import close
 
 import openai
 from dotenv import load_dotenv, find_dotenv
@@ -460,6 +461,72 @@ def currency_conversion_agent(user_message, conversation_history = None):
     if conversation_history is None:
         conversation_history = []
 
-    conversation_history
+    conversation_history.append({
+        "role": "user",
+        "content": user_message
+    })
+
+    tools = [
+        {
+            "type": "function",
+            "name": "convert_currency",
+            "description": "Function to convert amount from one currency to another currency",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "number",
+                        "description": "The amount to be converted from one currency to another"
+                    },
+                    "from_currency": {
+                        "type": "string",
+                        "description": "The currency code of currency to convert from (e.g. USD, JYP, GBP)"
+                    },
+                    "to_currency": {
+                        "type": "string",
+                        "description": "The currency code of currency to convert to (e.g. USD, JYP, GBP)"
+                    }
+                },
+                "required": ["amount", "from_currency", "to_currency"],
+                "optionalProperties": False
+            }
+        }
+    ]
+
+    response = client.responses.create(
+        model=model,
+        input=conversation_history,
+        tools=tools
+    )
+
+
+    if response.output and isinstance(response.output, list) and response.output[0].type == "function_call":
+        tool_calls = response.output[0]
+
+        arguments = json.loads(tool_calls.arguments)
+        result = convert_currency(**arguments)
+
+        # Add tool calls and its output into the conversion history
+        conversation_history.append(tool_calls)
+        conversation_history.append(
+            {
+                "type": "function_call_output",
+                "call_id": tool_calls.call_id,
+                "output": json.dumps(result)
+            }
+        )
+
+        # generate final output
+        final_output = client.responses.create(
+            model=model,
+            
+        )
+
+
+
+
+
+
+
 
 
