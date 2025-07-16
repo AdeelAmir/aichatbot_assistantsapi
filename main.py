@@ -517,16 +517,29 @@ def currency_conversion_agent(user_message, conversation_history = None):
         )
 
         # generate final output
-        final_output = client.responses.create(
+        final_response = client.responses.create(
             model=model,
-            
+            input=conversation_history,
+            tools=tools
         )
 
+        return final_response.output_text, conversation_history
+    else:
+        return response.output_text, conversation_history
+
+# User input - 1
+conversation = []
+message = "I want to convert 100 yen into pakistani rupees"
+agent_response, conversation = currency_conversion_agent(message, conversation_history=conversation)
+print(f"Agent response: {agent_response}")
 
 
+# User input - 2
+message = "I want to convert 50 GBP into dollars"
+agent_response, conversation = currency_conversion_agent(message, conversation_history=conversation)
+print(f"Agent response: {agent_response}")
 
-
-
-
-
-
+# User input - 2
+message = "what are stocks?"
+agent_response, conversation = currency_conversion_agent(message, conversation_history=conversation)
+print(f"Agent response: {agent_response}")
