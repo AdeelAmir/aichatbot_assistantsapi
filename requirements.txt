@@ -4,3 +4,10 @@ python-dotenv
 streamlit
 openai
 requests
+langserve
+langchain-community
+fastapi
+uvicorn
+sse_starlette
+pydantic
+requests
