@@ -11,3 +11,4 @@ uvicorn
 sse_starlette
 pydantic
 requests
+bs4

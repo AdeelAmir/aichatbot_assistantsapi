@@ -1,0 +1,13 @@
+A hypersonic weapon is a weapon that can travel and maneuver significantly during atmospheric flight at hypersonic speed, which is defined as above Mach 5 (five times the speed of sound).[1] These typically fall into two main categories: hypersonic glide vehicles (boost-glide weapons), and hypersonic cruise missiles (airbreathing weapons).
+
+Below Mach 1, weapons would be characterized as subsonic, and above Mach 1, as supersonic. At extremely high speeds, air in the shock wave is ionized into a plasma, which makes control and communication difficult.[3]
+
+Categorization
+There are two main categories of hypersonic weapon:
+
+Boost-glide hypersonic weapons, which glide and maneuver at hypersonic speeds following boosting by rocket propulsion. Typical examples are ballistic missiles fitted with hypersonic glide vehicle warheads.[4][1]
+Airbreathing hypersonic weapons, typically hypersonic cruise missiles which maintain hypersonic speed by engines such as scramjets.
+
+Gun-launched weapons, projectiles fired from either a conventional artillery or prospective railguns may also be considered a type of hypersonic weapon, though they are less common than the two main types.[1]
+
+Existing weapon systems such as ballistic missiles already travel at hypersonic speeds (and may actually reach their target sooner when on depressed trajectories)[5] but are not typically classified as hypersonic weapons due to lacking the use of aerodynamic lift to allow their reentry vehicles to maneuver under guided flight within the atmosphere. Maneuverable reentry vehicles, such as employed on the Pershing II, Fattah-1 and DF-21D, are generally excluded from this definition as they maneuver aerodynamically only for short periods of time during the terminal phase, and lack the significant cross-range maneuverability expected from hypersonic weapons.[2] Additionally, air-to-air missiles can temporarily reach hypersonic speeds in certain atmospheric envelopes and launch regimes, but generally are not considered as hypersonic weapons as they do not conduct significant maneuver at these speeds nor have the ability to evade anti-missile defenses.
