@@ -12,3 +12,8 @@ sse_starlette
 pydantic
 requests
 bs4
+pypdf
+docx2txt
+unstructured
+docx
+exceptions
