@@ -17,3 +17,6 @@ docx2txt
 unstructured
 docx
 chromadb
+weaviate
+weaviate-client
+langchain-weaviate
