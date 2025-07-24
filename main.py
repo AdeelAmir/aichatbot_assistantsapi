@@ -3,7 +3,7 @@ from chroma_connection import get_chroma_collection
 from pydantic import BaseModel
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
@@ -36,11 +36,11 @@ async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_colle
 
         # add metadata to each document
         for doc in documents:
-            doc.metadata = {"doc_id": request.book_id}
+            doc.metadata = {"doc_id": str(request.book_id)}
 
         # Create embeddings
         embeddings = OpenAIEmbeddings()
-        
+
         # Create a Chroma vector store
         Chroma.from_documents(documents, embeddings, collection_name="my_collection")
 
@@ -57,14 +57,14 @@ async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collect
         embeddings = OpenAIEmbeddings()
         db = Chroma(
             embedding_function= embeddings,
-            collection=col
+            collection_name="my_collection",
         )
 
         # Create a retriever from the collection
 
         retriever = db.as_retriever(search_kwargs={
             "k": 3,
-            "filter": {"doc_id": query.book_id}
+            "filter": {"doc_id": str(query.book_id)}
         })
 
         # Create a retrieval chain
@@ -78,14 +78,14 @@ async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collect
         Question: {input}
         """)
 
-        documents_chain = create_stuff_documents_chain(llm, prompt=prompt)
+        document_chain = create_stuff_documents_chain(llm, prompt=prompt)
 
         retrieval_chain = create_retrieval_chain(
-            retriever=retriever,
-            documents_chain=documents_chain
+            retriever,
+            document_chain
         )
 
-        result = retrieval_chain.invoke({"input": query.question})
+        result = retrieval_chain.invoke({"input": query.query})
     
         return {"status": True, "message": "Results retrieved successfully", "data": result["answer"]}
     
