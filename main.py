@@ -26,7 +26,7 @@ class SearchBookRequest(BaseModel):
 async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_collection)):
     try:
         # load pdf file
-        file_path = "rag/files/sample.pdf"  # Replace with actual file paths
+        file_path = "rag/files/book1.pdf"  # Replace with actual file paths
         loader = PyPDFLoader(file_path=file_path)
         documents = loader.load()
 
@@ -72,10 +72,16 @@ async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collect
         llm = ChatOpenAI(model_name=model)
 
         prompt = ChatPromptTemplate.from_template("""
-        You are a helpful assistant. Answer the question based on the provided context.
-        Think step by step and provide a detailed answer.
-        Context: {context}
-        Question: {input}
+        You are a helpful assistant. Answer the question based solely on the provided context.
+
+        - Think step by step and provide a detailed, accurate answer.
+        - If the context does not contain information relevant to the question, respond with: "Sorry, this is out of context."
+
+        Context:
+        {context}
+
+        Question:
+        {input}
         """)
 
         document_chain = create_stuff_documents_chain(llm, prompt=prompt)
