@@ -29,3 +29,6 @@ def get_chroma_collection(client: ClientAPI = Depends(get_chroma_client)) -> Col
         # Initialize or get the collection
         _collection = client.get_or_create_collection(name="my_collection")
     return _collection
+
+def get_persist_directory():
+    return "chroma_db"

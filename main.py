@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from chroma_connection import get_chroma_collection
+from chroma_connection import get_chroma_collection, get_persist_directory
 from pydantic import BaseModel
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -23,7 +23,7 @@ class SearchBookRequest(BaseModel):
     query: str
 
 @app.post("/api/upload_book")
-async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_collection)):
+async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_collection), persist_directory = Depends(get_persist_directory)):
     try:
         # load pdf file
         file_path = "rag/files/book1.pdf"  # Replace with actual file paths
@@ -42,7 +42,7 @@ async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_colle
         embeddings = OpenAIEmbeddings()
 
         # Create a Chroma vector store
-        Chroma.from_documents(documents, embeddings, collection_name="my_collection")
+        Chroma.from_documents(documents, embeddings, collection_name=col.name, persist_directory=persist_directory)
 
         return {"status": True, "message": "Book uploaded successfully"}
         
@@ -50,14 +50,16 @@ async def upload_book(request: UploadBookRequest, col = Depends(get_chroma_colle
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/api/search_book")
-async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collection)):
+async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collection), persist_directory = Depends(get_persist_directory)):
     try:
         # Rebuild vector store from collection
         
         embeddings = OpenAIEmbeddings()
+
         db = Chroma(
             embedding_function= embeddings,
-            collection_name="my_collection",
+            collection_name=col.name,
+            persist_directory=persist_directory
         )
 
         # Create a retriever from the collection
@@ -97,3 +99,25 @@ async def search_book(query: SearchBookRequest, col = Depends(get_chroma_collect
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.get('/chroma/records')  # Fixed missing forward slash
+async def get_chroma_records(col = Depends(get_chroma_collection), persist_directory = Depends(get_persist_directory)):
+    # Reconnect to your existing collection
+    embeddings = OpenAIEmbeddings()
+    db = Chroma(
+        collection_name=col.name,  # Use the same name as during upload
+        embedding_function=embeddings,
+        persist_directory=persist_directory
+    )
+
+    # Fetch all documents (or IDs)
+    results = db.get()
+
+    # Return the entire result dictionary (ids, documents, metadatas, embeddings, etc.)
+    return {
+        "ids": results.get("ids", []),
+        "documents": results.get("documents", []),
+        "metadatas": results.get("metadatas", []),
+        "embeddings": results.get("embeddings", [])
+    }
