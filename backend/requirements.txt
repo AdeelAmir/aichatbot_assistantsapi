@@ -20,3 +20,9 @@ chromadb
 weaviate
 weaviate-client
 langchain-weaviate
+wikipedia
+arxiv
+langchainhub
+sqlalchemy[asyncio]
+asyncpg
+psycopg2-binary
